@@ -447,6 +447,8 @@ def generate_report(metrics_path='results/metrics.json', output_pdf='Reporte_Pra
     pdf.ln()
 
     pdf.set_font(pdf.font_family_name, '', 8.5)
+    pdf.set_text_color(*pdf.clr_dark)
+    pdf.set_fill_color(255, 255, 255)
     for c in ['A', 'B', 'C', 'D']:
         c_meta = metrics['per_class'][c]
         desc = {
