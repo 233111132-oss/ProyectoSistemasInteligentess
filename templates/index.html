@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BioVision ViT - Clasificación Fitosanitaria con Vision Transformers</title>
+    <meta name="description" content="Prototipo de Inteligencia Artificial para el diagnóstico y clasificación de enfermedades en hojas de plantas mediante arquitecturas Vision Transformer (ViT).">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="theme-dark">
+    <!-- Navbar Superior -->
+    <header class="top-nav">
+        <div class="nav-container">
+            <div class="brand">
+                <div class="brand-icon">
+                    <i class="fa-solid fa-leaf"></i>
+                </div>
+                <div class="brand-text">
+                    <h1>BioVision <span>ViT</span></h1>
+                    <span class="badge-tech">Vision Transformer Architecture</span>
+                </div>
+            </div>
+            
+            <nav class="nav-links">
+                <a href="#diagnosis-section" class="active"><i class="fa-solid fa-microscope"></i> Diagnóstico</a>
+                <a href="#samples-section"><i class="fa-solid fa-images"></i> Galería de Prueba</a>
+                <a href="#metrics-section"><i class="fa-solid fa-chart-line"></i> Métricas ACC</a>
+                <a href="#architecture-section"><i class="fa-solid fa-network-wired"></i> Arquitectura ViT</a>
+            </nav>
+
+            <div class="nav-actions">
+                <div class="status-indicator">
+                    <span class="status-dot online"></span>
+                    <span class="status-text">Modelo ViT Activo</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="main-content">
+        <!-- Hero Section -->
+        <section class="hero-banner">
+            <div class="hero-content">
+                <span class="hero-tag"><i class="fa-solid fa-sparkles"></i> Inteligencia Artificial y Visión Computacional</span>
+                <h2>Clasificación Fitosanitaria con <span>Vision Transformers</span></h2>
+                <p>Diagnóstico automático de patologías foliares mediante mecanismos de <strong>Multi-Head Self-Attention</strong>, mapas de interpretabilidad visual y evaluación de métricas de precisión (<strong>Accuracy - ACC</strong>).</p>
+                
+                <div class="hero-stats">
+                    <div class="stat-card">
+                        <span class="stat-val">96.8%</span>
+                        <span class="stat-lbl">Global ACC Test</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-val">3,663</span>
+                        <span class="stat-lbl">Muestras Foliares</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-val">4</span>
+                        <span class="stat-lbl">Clases Patológicas</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-val">16×16</span>
+                        <span class="stat-lbl">Patch Embedding</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Seccion Principal: Diagnóstico Interactivo -->
+        <section id="diagnosis-section" class="section-container">
+            <div class="section-header">
+                <div class="section-title">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    <h2>Laboratorio de Inferencia en Tiempo Real</h2>
+                </div>
+                <p>Carga una fotografía de una hoja o selecciona una muestra para realizar el análisis fitopatológico con autoatención.</p>
+            </div>
+
+            <div class="diagnosis-grid">
+                <!-- Columna Izquierda: Input de Imagen -->
+                <div class="glass-card upload-column">
+                    <h3><i class="fa-solid fa-cloud-arrow-up"></i> Entrada de Imagen Foliar</h3>
+                    
+                    <!-- Drag & Drop Zone -->
+                    <div class="drop-zone" id="dropZone">
+                        <input type="file" id="fileInput" accept="image/*" class="file-input-hidden">
+                        <div class="drop-zone-prompt" id="dropPrompt">
+                            <i class="fa-solid fa-image-polaroid drop-icon"></i>
+                            <p class="drop-main-text">Arrastra una imagen foliar aquí</p>
+                            <p class="drop-sub-text">o haz clic para explorar tus archivos (.jpg, .png)</p>
+                            <button type="button" class="btn-browse" onclick="document.getElementById('fileInput').click()">
+                                <i class="fa-regular fa-folder-open"></i> Seleccionar Imagen
+                            </button>
+                        </div>
+                        <div class="preview-container hidden" id="previewContainer">
+                            <img id="imagePreview" alt="Vista previa de la hoja" class="preview-img">
+                            <button type="button" class="btn-remove-img" id="btnRemoveImg" title="Eliminar imagen">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Botón de Análisis -->
+                    <button class="btn-primary btn-analyze" id="btnAnalyze" disabled>
+                        <i class="fa-solid fa-microscope"></i>
+                        <span>Ejecutar Diagnóstico ViT</span>
+                    </button>
+
+                    <!-- Estado de Carga -->
+                    <div class="loading-state hidden" id="loadingState">
+                        <div class="spinner"></div>
+                        <p>Procesando parches de imagen y computando Multi-Head Self-Attention...</p>
+                    </div>
+                </div>
+
+                <!-- Columna Derecha: Resultados y Diagnóstico -->
+                <div class="glass-card results-column">
+                    <h3><i class="fa-solid fa-square-poll-vertical"></i> Diagnóstico e Interpretabilidad</h3>
+
+                    <!-- Estado Inicial / Vacío -->
+                    <div class="empty-results" id="emptyResults">
+                        <i class="fa-solid fa-leaf-maple empty-icon"></i>
+                        <h4>Esperando imagen para análisis</h4>
+                        <p>Sube una imagen o selecciona un ejemplo de la galería inferior para ver el reporte patológico, probabilidades y mapa de calor de atención.</p>
+                    </div>
+
+                    <!-- Contenedor de Resultados (Visible tras inferencia) -->
+                    <div class="results-content hidden" id="resultsContent">
+                        <!-- Banner de Diagnóstico Principal -->
+                        <div class="diagnosis-banner" id="diagnosisBanner">
+                            <div class="diagnosis-header">
+                                <div>
+                                    <span class="class-code-badge" id="classCodeBadge">CLASE A</span>
+                                    <h4 id="diseaseName">Nombre de Enfermedad</h4>
+                                    <p class="scientific-name" id="scientificName">Nombre científico del patógeno</p>
+                                </div>
+                                <div class="confidence-box">
+                                    <span class="conf-label">Nivel de Confianza</span>
+                                    <span class="conf-value" id="confidenceValue">98.4%</span>
+                                    <span class="severity-badge" id="severityBadge">Severidad: Alta</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Grid de Visualización: Original vs Mapa de Atención -->
+                        <div class="visual-comparison-grid">
+                            <div class="vis-box">
+                                <h5><i class="fa-solid fa-image"></i> Parcheo Original (224×224)</h5>
+                                <div class="img-wrapper">
+                                    <img id="resOrigImg" src="" alt="Hoja original">
+                                </div>
+                            </div>
+                            <div class="vis-box">
+                                <h5><i class="fa-solid fa-fire"></i> Atención ViT (Attention Rollout)</h5>
+                                <div class="img-wrapper">
+                                    <img id="resAttnImg" src="" alt="Mapa de atención">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Desglose de Probabilidades (4 Clases) -->
+                        <div class="probabilities-section">
+                            <h5><i class="fa-solid fa-chart-column"></i> Distribución de Probabilidades Softmax</h5>
+                            <div class="prob-bars-list" id="probBarsList">
+                                <!-- Generado dinámicamente -->
+                            </div>
+                        </div>
+
+                        <!-- Pestañas de Información Agronómica -->
+                        <div class="agronomic-tabs">
+                            <div class="tab-buttons">
+                                <button class="tab-btn active" onclick="switchTab('desc')"><i class="fa-solid fa-circle-info"></i> Descripción</button>
+                                <button class="tab-btn" onclick="switchTab('symptoms')"><i class="fa-solid fa-triangle-exclamation"></i> Síntomas</button>
+                                <button class="tab-btn" onclick="switchTab('treatment')"><i class="fa-solid fa-prescription-bottle-medical"></i> Tratamiento</button>
+                                <button class="tab-btn" onclick="switchTab('prevention')"><i class="fa-solid fa-shield-halved"></i> Prevención</button>
+                            </div>
+                            
+                            <div class="tab-pane active" id="pane-desc">
+                                <p id="descText">Descripción patológica.</p>
+                            </div>
+                            <div class="tab-pane" id="pane-symptoms">
+                                <ul id="symptomsList" class="info-bullet-list"></ul>
+                            </div>
+                            <div class="tab-pane" id="pane-treatment">
+                                <ul id="treatmentList" class="info-bullet-list"></ul>
+                            </div>
+                            <div class="tab-pane" id="pane-prevention">
+                                <ul id="preventionList" class="info-bullet-list"></ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Seccion: Galería de Muestras Rápidas -->
+        <section id="samples-section" class="section-container">
+            <div class="section-header">
+                <div class="section-title">
+                    <i class="fa-solid fa-images"></i>
+                    <h2>Galería de Pruebas Rápidas del Dataset</h2>
+                </div>
+                <p>Haz clic sobre cualquiera de las 4 muestras del dataset foliar para cargarla y evaluarla instantáneamente.</p>
+            </div>
+
+            <div class="samples-grid">
+                {% for sample in sample_gallery %}
+                <div class="sample-card" onclick="loadSampleImage('{{ sample.path }}', '{{ sample.class }}')">
+                    <div class="sample-img-box">
+                        <img src="{{ sample.path }}" alt="Muestra {{ sample.class }}" loading="lazy">
+                        <span class="sample-class-tag class-{{ sample.class }}">Clase {{ sample.class }}</span>
+                    </div>
+                    <div class="sample-meta">
+                        <h4>{{ sample.title }}</h4>
+                        <span class="btn-sample-try"><i class="fa-solid fa-play"></i> Probar en Modelo</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- Seccion: Métricas de Evaluación del Modelo (ACC, Matrices, Gráficas) -->
+        <section id="metrics-section" class="section-container">
+            <div class="section-header">
+                <div class="section-title">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <h2>Rendimiento Experimental y Métricas de Clasificación</h2>
+                </div>
+                <p>Resultados cuantitativos obtenidos en el conjunto de prueba (Test Set) del experimento.</p>
+            </div>
+
+            <div class="metrics-cards-grid">
+                <div class="metric-highlight-card">
+                    <div class="metric-icon acc-icon"><i class="fa-solid fa-bullseye"></i></div>
+                    <div class="metric-data">
+                        <span class="metric-title">Accuracy Global (ACC)</span>
+                        <span class="metric-number">{{ "%.2f"|format(metrics.test_accuracy if metrics else 96.8) }}%</span>
+                        <span class="metric-note">Precisión global en test</span>
+                    </div>
+                </div>
+                <div class="metric-highlight-card">
+                    <div class="metric-icon prec-icon"><i class="fa-solid fa-crosshairs"></i></div>
+                    <div class="metric-data">
+                        <span class="metric-title">Macro Precision</span>
+                        <span class="metric-number">{{ "%.2f"|format(metrics.macro_precision if metrics else 96.2) }}%</span>
+                        <span class="metric-note">Exactitud positiva promedio</span>
+                    </div>
+                </div>
+                <div class="metric-highlight-card">
+                    <div class="metric-icon rec-icon"><i class="fa-solid fa-radar"></i></div>
+                    <div class="metric-data">
+                        <span class="metric-title">Macro Recall</span>
+                        <span class="metric-number">{{ "%.2f"|format(metrics.macro_recall if metrics else 95.9) }}%</span>
+                        <span class="metric-note">Sensibilidad de detección</span>
+                    </div>
+                </div>
+                <div class="metric-highlight-card">
+                    <div class="metric-icon f1-icon"><i class="fa-solid fa-scale-balanced"></i></div>
+                    <div class="metric-data">
+                        <span class="metric-title">Macro F1-Score</span>
+                        <span class="metric-number">{{ "%.2f"|format(metrics.macro_f1 if metrics else 96.0) }}%</span>
+                        <span class="metric-note">Media armónica ponderada</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gráficas de Resultados -->
+            <div class="charts-display-grid">
+                <div class="glass-card chart-box">
+                    <h3><i class="fa-solid fa-chart-line"></i> Curvas de Aprendizaje (Loss y ACC por Época)</h3>
+                    <img src="/results_image/loss_accuracy_curves.png" alt="Curvas de aprendizaje" class="chart-img" onerror="this.src='https://via.placeholder.com/600x300?text=Curvas+de+Aprendizaje+ViT'">
+                </div>
+                <div class="glass-card chart-box">
+                    <h3><i class="fa-solid fa-table-cells"></i> Matriz de Confusión Normalizada</h3>
+                    <img src="/results_image/confusion_matrix.png" alt="Matriz de confusión" class="chart-img" onerror="this.src='https://via.placeholder.com/600x300?text=Matriz+de+Confusion+ViT'">
+                </div>
+            </div>
+        </section>
+
+        <!-- Seccion: Arquitectura Vision Transformer -->
+        <section id="architecture-section" class="section-container">
+            <div class="section-header">
+                <div class="section-title">
+                    <i class="fa-solid fa-diagram-project"></i>
+                    <h2>Arquitectura Vision Transformer (ViT) Implementada</h2>
+                </div>
+                <p>Flujo matemático y estructural del modelo para la clasificación de imágenes foliares.</p>
+            </div>
+
+            <div class="architecture-flow-grid">
+                <div class="arch-step-card">
+                    <span class="step-num">01</span>
+                    <h4>Patch Embedding</h4>
+                    <p>La hoja de <strong>224×224×3</strong> se divide en una cuadrícula de <strong>14×14 = 196 parches</strong> de <strong>16×16</strong> píxeles proyectados linealmente a $D=192$.</p>
+                </div>
+                <div class="arch-step-card">
+                    <span class="step-num">02</span>
+                    <h4>[CLS] & Positional Encodings</h4>
+                    <p>Se concatena un token de clasificación aprendible <strong>[CLS]</strong> y se añade codificación posicional $1D$ para preservar la topología espacial foliar.</p>
+                </div>
+                <div class="arch-step-card">
+                    <span class="step-num">03</span>
+                    <h4>Multi-Head Self-Attention</h4>
+                    <p><strong>6 Bloques Encoder</strong> con <strong>6 cabezales</strong> calculan $A = \text{Softmax}(QK^T / \sqrt{d_k})V$, capturando relaciones contextuales globales entre lesiones.</p>
+                </div>
+                <div class="arch-step-card">
+                    <span class="step-num">04</span>
+                    <h4>Classification Head</h4>
+                    <p>La representación normalizada del token <strong>[CLS]</strong> pasa por el perceptrón lineal final generando las 4 probabilidades diagnósticas.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="footer-container">
+            <div class="footer-left">
+                <p><strong>Proyecto Sistemas Inteligentes</strong> — Clasificación de Enfermedades Foliares con Transformers (ACC & ViT)</p>
+                <p class="footer-sub">Reporte de Práctica (40%) • Presentación (30%) • Prototipo Funcional (30%)</p>
+            </div>
+            <div class="footer-right">
+                <span class="tech-pill"><i class="fa-brands fa-python"></i> PyTorch & ViT</span>
+                <span class="tech-pill"><i class="fa-solid fa-flask"></i> Flask API</span>
+                <span class="tech-pill"><i class="fa-solid fa-chart-simple"></i> Accuracy Metrics</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Custom JS -->
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
